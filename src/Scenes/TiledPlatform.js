@@ -123,11 +123,8 @@ class TiledPlatform extends Phaser.Scene {
 
         // create collider(s)/overlap(s)
         this.physics.add.collider(this.p1, groundLayer);
-        this.physics.add.overlap(this.p1, this.coinGroup, (obj1, obj2) => {
-            obj2.destroy(); // remove coin on overlap
-        });
         this.powerUpVfxManager = this.add.particles('kenney_sheet', 215);
-
+        this.coinVfxManager = this.add.particles('kenney_sheet', 185);
         this.powerUpVfxEffect = this.powerUpVfxManager.createEmitter({
             follow: this.p1,
             quantity: 20,
@@ -135,6 +132,18 @@ class TiledPlatform extends Phaser.Scene {
             speed: {min: 50, max: 100}, // speed up
             lifespan: 800,   // short lifespan
             on: false   // do not immediately start, will trigger in collision
+        });
+        this.coinVfxEffect = this.coinVfxManager.createEmitter({
+            follow: this.p1,
+            quantity: 20,
+            scale: {start: 1.0, end: 0.0},  // start big, end small
+            speed: {min: 50, max: 100}, // speed up
+            lifespan: 800,   // short lifespan
+            on: false   // do not immediately start, will trigger in collision
+        });
+        this.physics.add.overlap(this.p1, this.coinGroup, (obj1, obj2) => {
+            this.powerUpVfxEffect.explode(); // trigger particle system
+            obj2.destroy(); // remove coin on overlap
         });
         this.physics.add.overlap(this.p1, this.bluePowerUpGroup, (obj1, obj2) => {
             this.powerUpVfxEffect.explode(); // trigger particle system
